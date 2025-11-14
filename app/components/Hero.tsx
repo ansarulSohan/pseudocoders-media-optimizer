@@ -18,13 +18,13 @@ const Hero: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
-              href="#optimizer"
+              href="/video-to-webm"
               className="px-8 py-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-lg"
             >
               Start Optimizing
             </a>
             <a
-              href="#features"
+              href="/about"
               className="px-8 py-4 bg-white text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors font-medium text-lg"
             >
               Learn More
@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-4xl font-bold text-blue-600 mb-2">90%</div>
+            <div className="text-4xl font-bold text-blue-600 mb-2">~90%</div>
             <div className="text-gray-600">Size Reduction</div>
           </div>
           <div className="text-center">
