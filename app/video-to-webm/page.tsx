@@ -56,6 +56,13 @@ export default function Compress() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
+    if (file && file.size > 300 * 1024 * 1024) {
+      alert("File is too large. Please select a file smaller than 300MB.");
+      e.target.value = "";
+      return;
+    }
+
     if (file && file.type.startsWith("video/")) {
       setVideoFile(file);
       setOriginalSize(file.size);
@@ -388,10 +395,9 @@ export default function Compress() {
                 <span>Preview and download your compressed video</span>
               </li>
             </ul>
-            <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-500">
-              Note: Video compression happens entirely in your browser. Large or
-              long videos can be very memory intensive and may fail in some
-              browsers or machines.
+            <p className="mt-4 text-sm text-bold text-crimson-500 dark:text-red-500">
+              Note: Video compression happens entirely in your browser. Make
+              sure that the file you are uploading is smaller than 300MB.
             </p>
           </section>
         </div>
