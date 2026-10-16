@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PseudoCoders Media Optimizer - Free Image & Video Compression",
-  description: "Optimize your images and videos with our free, secure, and powerful compression tool. Reduce file sizes by up to 90% while maintaining quality. All processing happens in your browser.",
+  title: "MediaKit — Simple tools for lighter media",
+  description: "Convert video to WebM with a simple browser-based tool. Your files stay on your device.",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
