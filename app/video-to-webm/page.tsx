@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
 
@@ -199,209 +200,100 @@ export default function Compress() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen flex-col bg-[#f7f8f4]">
       <Header />
-      <main className="flex min-h-screen w-full max-w-4xl flex-col py-16 px-8 sm:px-16 bg-white dark:bg-black mx-auto">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-black dark:text-zinc-50">
-            Video Compressor
-          </h1>
-          <p className="text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Compress your videos to WebM format for smaller file sizes and
-            better web compatibility. All processing happens directly in your
-            browser.
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-5 py-10 sm:px-8 sm:py-16">
+        <div className="mb-8">
+          <a href="/tools" className="text-sm font-medium text-slate-500 transition hover:text-slate-900">← All tools</a>
+          <h1 className="mt-6 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Convert video to WebM</h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+            Choose a video, set your preferred quality, and download a web-ready file. Processing stays in your browser.
           </p>
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-lime-200 bg-lime-50 px-3 py-2 text-xs font-medium text-lime-800">
+            <span className={`h-2 w-2 rounded-full ${isFFmpegReady ? "bg-lime-500" : "bg-amber-500 animate-pulse"}`} />
+            {isFFmpegReady ? "Ready to convert" : "Preparing converter…"}
+          </p>
+          {!isFFmpegReady && statusMessage && (
+            <p role="alert" className="mt-3 text-sm text-rose-700">{statusMessage}</p>
+          )}
         </div>
 
-        <div className="space-y-8">
-          {/* File Upload Section */}
-          <section className="pb-8 border-b border-zinc-200 dark:border-zinc-800">
-            <label
-              htmlFor="video-upload"
-              className="block text-sm font-medium mb-4 text-black dark:text-zinc-50"
-            >
-              Select Video File
-            </label>
-            <div className="flex flex-col gap-4">
-              <input
-                ref={fileInputRef}
-                id="video-upload"
-                type="file"
-                accept="video/*"
-                onChange={handleFileSelect}
-                className="block w-full text-sm text-zinc-600 dark:text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300 border border-zinc-200 dark:border-zinc-800 rounded-md p-2"
-                disabled={isCompressing || !isFFmpegReady}
-              />
-              {!isFFmpegReady && (
-                <p className="text-xs text-amber-600 dark:text-amber-400">
-                  Loading FFmpeg… please wait a moment before compressing.
-                </p>
-              )}
-              {originalSize && (
-                <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Original size:{" "}
-                  <span className="font-medium">
-                    {formatFileSize(originalSize)}
-                  </span>
-                </p>
-              )}
-            </div>
-          </section>
-
-          {/* Quality Settings */}
-          {videoFile && (
-            <section className="pb-8 border-b border-zinc-200 dark:border-zinc-800">
-              <label className="block text-sm font-medium mb-4 text-black dark:text-zinc-50">
-                Compression Quality
+        <div className="grid items-start gap-6 lg:grid-cols-[1.2fr_.8fr]">
+          <div className="space-y-5">
+            <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-950 text-sm font-semibold text-lime-300">1</span>
+                <div><h2 className="font-semibold text-slate-950">Choose a video</h2><p className="mt-0.5 text-xs text-slate-500">Up to 300 MB</p></div>
+              </div>
+              <input ref={fileInputRef} id="video-upload" type="file" accept="video/*" onChange={handleFileSelect} disabled={isCompressing || !isFFmpegReady} className="sr-only" />
+              <label htmlFor="video-upload" className={`mt-6 flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-8 text-center transition ${videoFile ? "border-lime-300 bg-lime-50/50" : "border-slate-300 bg-[#fafbf8] hover:border-slate-400 hover:bg-slate-50"} ${!isFFmpegReady || isCompressing ? "cursor-not-allowed opacity-60" : ""}`}>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-xl text-slate-800 shadow-sm">↑</span>
+                <span className="mt-4 text-sm font-semibold text-slate-900">{videoFile ? videoFile.name : "Choose a video file"}</span>
+                <span className="mt-1 text-xs text-slate-500">{videoFile && originalSize ? `${formatFileSize(originalSize)} · Click to choose another` : "MP4, MOV, WebM and other video formats"}</span>
+                {!videoFile && <span className="mt-4 rounded-full bg-slate-950 px-4 py-2 text-xs font-semibold text-white">Browse files</span>}
               </label>
-              <div className="flex gap-4">
-                {(["low", "medium", "high"] as Quality[]).map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => setQuality(q)}
-                    disabled={isCompressing}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      quality === q
-                        ? "bg-blue-600 text-white"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                    } ${isCompressing ? "opacity-50 cursor-not-allowed" : ""}`}
-                  >
-                    {q.charAt(0).toUpperCase() + q.slice(1)}
+
+              {videoFile && (
+                <div className="mt-7 border-t border-slate-100 pt-6">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-950 text-sm font-semibold text-lime-300">2</span>
+                    <div><h2 className="font-semibold text-slate-950">Choose quality</h2><p className="mt-0.5 text-xs text-slate-500">A higher quality can create a larger file.</p></div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    {(["low", "medium", "high"] as Quality[]).map((q) => (
+                      <button key={q} type="button" onClick={() => setQuality(q)} disabled={isCompressing} aria-pressed={quality === q} className={`rounded-xl border px-3 py-3 text-sm font-semibold capitalize transition ${quality === q ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-400"} disabled:cursor-not-allowed disabled:opacity-50`}>
+                        {q}<span className={`mt-1 block text-[10px] font-normal ${quality === q ? "text-slate-300" : "text-slate-400"}`}>{q === "low" ? "Smaller file" : q === "medium" ? "Balanced" : "More detail"}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {videoFile && !compressedVideoUrl && (
+                <div className="mt-6">
+                  <button type="button" onClick={handleCompress} disabled={isCompressing || !isFFmpegReady} className="w-full rounded-full bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
+                    {isCompressing ? `Converting… ${progress}%` : "Convert to WebM"}
                   </button>
-                ))}
-              </div>
-              <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-                Lower quality = smaller file size. Higher quality = better
-                visuals but larger file size.
-              </p>
-            </section>
-          )}
+                  {(isCompressing || statusMessage) && <div className="mt-4" aria-live="polite">
+                    {statusMessage && <p className="text-center text-xs text-slate-500">{statusMessage}</p>}
+                    {isCompressing && <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-lime-500 transition-all" style={{ width: `${progress}%` }} /></div>}
+                  </div>}
+                </div>
+              )}
 
-          {/* Original Video Preview */}
-          {videoPreview && (
-            <section className="pb-8 border-b border-zinc-200 dark:border-zinc-800">
-              <h2 className="text-xl font-semibold mb-4 text-black dark:text-zinc-50">
-                Original Video Preview
-              </h2>
-              <div className="aspect-video w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg overflow-hidden">
-                <Suspense
-                  fallback={
-                    <div className="w-full h-full bg-zinc-100 dark:bg-zinc-900 rounded-lg">
-                      loading...
-                    </div>
-                  }
-                >
-                  <video
-                    ref={videoRef}
-                    src={videoPreview}
-                    controls
-                    className="w-full h-full object-cover object-center rounded-lg border border-zinc-200 dark:border-zinc-800"
-                  />
-                </Suspense>
-              </div>
-            </section>
-          )}
-
-          {/* Compress Button */}
-          {videoFile && !compressedVideoUrl && (
-            <section className="pb-8">
-              <button
-                onClick={handleCompress}
-                disabled={isCompressing || !isFFmpegReady}
-                className="w-full px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isCompressing
-                  ? `Compressing... ${progress}%`
-                  : "Compress to WebM"}
-              </button>
-              {(isCompressing || statusMessage) && (
-                <div className="mt-4 space-y-2">
-                  {statusMessage && (
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                      {statusMessage}
-                    </p>
-                  )}
-                  {isCompressing && (
-                    <>
-                      <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2.5">
-                        <div
-                          className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-500 text-center">
-                        {progress}% complete
-                      </p>
-                    </>
-                  )}
+              {compressedVideoUrl && (
+                <div className="mt-7 border-t border-slate-100 pt-6" aria-live="polite">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div><h2 className="font-semibold text-slate-950">Your WebM is ready</h2><p className="mt-1 text-xs text-slate-500">{compressedSize ? formatFileSize(compressedSize) : ""}</p></div>
+                    {compressedSize && originalSize && <span className="rounded-full bg-lime-100 px-3 py-1.5 text-xs font-semibold text-lime-800">{Math.round((1 - compressedSize / originalSize) * 100)}% smaller</span>}
+                  </div>
+                  <video src={compressedVideoUrl} controls className="mt-4 aspect-video w-full rounded-2xl bg-slate-950" />
+                  <button type="button" onClick={handleDownload} className="mt-4 w-full rounded-full bg-slate-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800">Download WebM</button>
                 </div>
               )}
             </section>
-          )}
+          </div>
 
-          {/* Compressed Video Result */}
-          {compressedVideoUrl && (
-            <section className="pb-8 border-t border-zinc-200 dark:border-zinc-800 pt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-black dark:text-zinc-50">
-                  Compressed Video
-                </h2>
-                {compressedSize && originalSize && (
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400">
-                    <span className="font-medium text-green-600 dark:text-green-400">
-                      {Math.round((1 - compressedSize / originalSize) * 100)}%
-                      smaller
-                    </span>{" "}
-                    ({formatFileSize(compressedSize)})
-                  </div>
-                )}
+          <aside className="space-y-5">
+            {videoPreview ? (
+              <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <h2 className="text-sm font-semibold text-slate-950">Preview original</h2>
+                <video ref={videoRef} src={videoPreview} controls className="mt-4 aspect-video w-full rounded-2xl bg-slate-950" />
+              </section>
+            ) : (
+              <div className="flex aspect-video items-center justify-center overflow-hidden rounded-[28px] border border-slate-200 bg-slate-900 p-8">
+                <div className="text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-lime-200">▶</span><p className="mt-4 text-sm font-medium text-white">Your preview appears here</p></div>
               </div>
-              <div className="aspect-video w-full bg-zinc-100 dark:bg-zinc-900 rounded-lg overflow-hidden mb-4">
-                <video
-                  src={compressedVideoUrl}
-                  controls
-                  className="w-full h-full"
-                />
-              </div>
-              <button
-                onClick={handleDownload}
-                className="w-full px-6 py-3 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 transition-colors"
-              >
-                Download Compressed Video
-              </button>
+            )}
+            <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-100 text-lg">⌂</span><h2 className="text-sm font-semibold text-slate-950">Private by design</h2></div>
+              <p className="mt-3 text-xs leading-5 text-slate-500">Your video is handled in this browser session. It is not uploaded to a server. Keep this tab open until your conversion finishes.</p>
             </section>
-          )}
-
-          {/* Instructions */}
-          <section className="pt-8 border-t border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-              How to Use
-            </h2>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Select a video file from your device</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Choose your preferred compression quality</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Click &quot;Compress to WebM&quot; and wait</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Preview and download your compressed video</span>
-              </li>
-            </ul>
-            <p className="mt-4 text-sm text-bold text-crimson-500 dark:text-red-500">
-              Note: Video compression happens entirely in your browser. Make
-              sure that the file you are uploading is smaller than 300MB.
-            </p>
-          </section>
+            <p className="px-2 text-xs leading-5 text-slate-400">Large videos can take a while to process and may use significant memory. A desktop browser is recommended for files near the 300 MB limit.</p>
+          </aside>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
