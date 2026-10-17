@@ -1,75 +1,48 @@
-import React from "react";
+const features = [
+  {
+    number: "01",
+    title: "Private by default",
+    description: "Your video is processed in your browser. The file never gets sent to a server.",
+    icon: "↗",
+  },
+  {
+    number: "02",
+    title: "Simple controls",
+    description: "Choose a quality preset, see the result, and download when it looks right.",
+    icon: "⌘",
+  },
+  {
+    number: "03",
+    title: "No account needed",
+    description: "Open the tool and get started. No sign-up, subscription, or upload queue.",
+    icon: "◎",
+  },
+];
 
-const Features: React.FC = () => {
-  const features = [
-    {
-      icon: "🔒",
-      title: "100% Private",
-      description:
-        "All processing happens in your browser, files never leave your device",
-    },
-    {
-      icon: "⚡",
-      title: "Lightning Fast",
-      description:
-        "Instant optimization with no server uploads or waiting times",
-    },
-    {
-      icon: "🎯",
-      title: "Smart Compression",
-      description:
-        "Advanced algorithms maintain quality while reducing file size",
-    },
-    {
-      icon: "📱",
-      title: "Fully Responsive",
-      description: "Works seamlessly on desktop, tablet, and mobile devices",
-    },
-    {
-      icon: "🆓",
-      title: "Completely Free",
-      description: "No subscriptions, no limits, unlimited optimizations",
-    },
-    {
-      icon: "🎨",
-      title: "Multiple Formats",
-      description: "Support for JPG, PNG, WebP, GIF, MP4, and more",
-    },
-  ];
-
+export default function Features() {
   return (
-    <section
-      id="features"
-      className="w-full py-20 px-4 sm:px-6 lg:px-8 bg-white"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Why Choose Our Tool?
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Everything you need for professional media optimization
-          </p>
+    <section id="features" className="bg-white px-5 py-20 sm:px-8 sm:py-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-12 flex flex-col gap-4 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lime-700">Made for a lighter workflow</p>
+            <h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Less friction between you and done.</h2>
+          </div>
+          <p className="max-w-sm text-sm leading-6 text-slate-500">Everything runs on your device, so your media remains yours from start to finish.</p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow"
-            >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {features.map((feature) => (
+            <article key={feature.number} className="group rounded-3xl border border-slate-200 bg-[#fafbf8] p-6 transition duration-200 hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-xl hover:shadow-slate-900/5 sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-widest text-slate-400">{feature.number}</span>
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-lime-100 text-xl text-slate-900">{feature.icon}</span>
+              </div>
+              <h3 className="mt-9 text-lg font-semibold text-slate-950">{feature.title}</h3>
+              <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">{feature.description}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default Features;
-
+}
